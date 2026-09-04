@@ -62,6 +62,13 @@ const App = () => {
     setSelected(random);
   };
 
+  const getMostVotes = () => {
+    const copy = [...votes];
+    const maxIndex = copy.indexOf(Math.max(...copy));
+    return maxIndex;
+  };
+  console.log(getMostVotes());
+
   return (
     <div>
       <>
@@ -73,9 +80,14 @@ const App = () => {
         <h2>statistics</h2>
         <Statistics good={good} neutral={neutral} bad={bad} />
 
+        <h2>Anecdote of the day</h2>
         <p>{anecdotes[selected]}</p>
+        <p>has {votes[selected]} votes</p>
         <button onClick={handleVote}>vote</button>
         <button onClick={getRandomAnecdote}>next anecdote</button>
+
+        <h2>Anecdote with most votes</h2>
+        <p>{anecdotes[getMostVotes()]}</p>
       </>
     </div>
   );
