@@ -1,5 +1,5 @@
-const Header = ({ course }) => {
-  return <h1>{course.name}</h1>;
+const Header = ({ name }) => {
+  return <h2>{name}</h2>;
 };
 
 const Part = ({ part }) => {
@@ -25,7 +25,7 @@ const Total = ({ parts }) => {
 const Course = ({ course }) => {
   return (
     <>
-      <Header course={course} />
+      <Header name={course.name} />
       <Content parts={course.parts} />
       <Total parts={course.parts} />
     </>
