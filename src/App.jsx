@@ -1,96 +1,29 @@
-import { useState } from 'react';
-
-const StatisticLine = ({ text, value }) => {
-  return (
-    <tr>
-      <td>{text}</td>
-      <td>{value}</td>
-    </tr>
-  );
-};
-
-const Statistics = ({ good, neutral, bad }) => {
-  const all = good + neutral + bad;
-  const average = (good - bad) / all;
-  const positive = good / all;
-
-  if (all == 0) {
-    return <p>No feedback given</p>;
-  }
-  return (
-    <table>
-      <tbody>
-        <StatisticLine text='good' value={good} />
-        <StatisticLine text='neutral' value={neutral} />
-        <StatisticLine text='bad' value={bad} />
-        <StatisticLine text='all' value={all} />
-        <StatisticLine text='average' value={average} />
-        <StatisticLine text='positive' value={positive} />
-      </tbody>
-    </table>
-  );
-};
-
-const anecdotes = [
-  'If it hurts, do it more often.',
-  'Adding manpower to a late software project makes it later!',
-  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
-  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
-  'Premature optimization is the root of all evil.',
-  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
-  'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
-  'The only way to go fast, is to go well.',
-];
+import Course from './components/Course';
 
 const App = () => {
-  const [good, setGood] = useState(0);
-  const [neutral, setNeutral] = useState(0);
-  const [bad, setBad] = useState(0);
-  const [selected, setSelected] = useState(0);
-  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
-
-  const handleVote = () => {
-    const copy = [...votes];
-    copy[selected] += 1;
-    setVotes([...copy]);
+  const course = {
+    id: 1,
+    name: 'Half Stack application development',
+    parts: [
+      {
+        name: 'Fundamentals of React',
+        exercises: 10,
+        id: 1,
+      },
+      {
+        name: 'Using props to pass data',
+        exercises: 7,
+        id: 2,
+      },
+      {
+        name: 'State of a component',
+        exercises: 14,
+        id: 3,
+      },
+    ],
   };
 
-  console.log('🚀 -> App -> votes:', votes);
-
-  const getRandomAnecdote = () => {
-    const random = Math.floor(Math.random() * anecdotes.length);
-    setSelected(random);
-  };
-
-  const getMostVotes = () => {
-    const copy = [...votes];
-    const maxIndex = copy.indexOf(Math.max(...copy));
-    return maxIndex;
-  };
-  console.log(getMostVotes());
-
-  return (
-    <div>
-      <>
-        <h2>give feedback</h2>
-        <button onClick={() => setGood(good + 1)}>good</button>
-        <button onClick={() => setNeutral(neutral + 1)}>neutral</button>
-        <button onClick={() => setBad(bad + 1)}>bad</button>
-
-        <h2>statistics</h2>
-        <Statistics good={good} neutral={neutral} bad={bad} />
-
-        <h2>Anecdote of the day</h2>
-        <p>{anecdotes[selected]}</p>
-        <p>has {votes[selected]} votes</p>
-        <button onClick={handleVote}>vote</button>
-        <button onClick={getRandomAnecdote}>next anecdote</button>
-
-        <h2>Anecdote with most votes</h2>
-        <p>{anecdotes[getMostVotes()]}</p>
-      </>
-    </div>
-  );
+  return <Course course={course} />;
 };
 
 export default App;
