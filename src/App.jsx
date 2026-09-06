@@ -1,5 +1,58 @@
 import { useState } from 'react';
 
+const Filter = ({ newFilter, handleFilter }) => {
+  return (
+    <div>
+      filter shown with <input value={newFilter} onChange={handleFilter} />
+    </div>
+  );
+};
+
+const PersonForm = ({
+  newName,
+  setNewName,
+  newNumber,
+  setNewNumber,
+  handleSubmit,
+}) => {
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        name:{' '}
+        <input value={newName} onChange={(e) => setNewName(e.target.value)} />
+      </div>
+      <div>
+        number:{' '}
+        <input
+          value={newNumber}
+          onChange={(e) => setNewNumber(e.target.value)}
+        />
+      </div>
+      <div>
+        <button type='submit'>add</button>
+      </div>
+    </form>
+  );
+};
+
+const Persons = ({ persons, filterPersons, newFilter }) => {
+  return (
+    <div>
+      {newFilter
+        ? filterPersons.map((person) => (
+            <div key={person.name}>
+              {person.name} {person.number}
+            </div>
+          ))
+        : persons.map((person) => (
+            <div key={person.name}>
+              {person.name} {person.number}
+            </div>
+          ))}
+    </div>
+  );
+};
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -42,40 +95,26 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with <input value={newFilter} onChange={handleFilter} />
-      </div>
-      <h2>add a new</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          name:{' '}
-          <input value={newName} onChange={(e) => setNewName(e.target.value)} />
-        </div>
-        <div>
-          number:{' '}
-          <input
-            value={newNumber}
-            onChange={(e) => setNewNumber(e.target.value)}
-          />
-        </div>
-        <div>
-          <button type='submit'>add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      <div>
-        {newFilter
-          ? filterPersons.map((person) => (
-              <div key={person.name}>
-                {person.name} {person.number}
-              </div>
-            ))
-          : persons.map((person) => (
-              <div key={person.name}>
-                {person.name} {person.number}
-              </div>
-            ))}
-      </div>
+
+      <Filter newFilter={newFilter} handleFilter={handleFilter} />
+
+      <h3>add a new</h3>
+
+      <PersonForm
+        newName={newName}
+        setNewName={setNewName}
+        newNumber={newNumber}
+        setNewNumber={setNewNumber}
+        handleSubmit={handleSubmit}
+      />
+
+      <h3>Numbers</h3>
+
+      <Persons
+        persons={persons}
+        filterPersons={filterPersons}
+        newFilter={newFilter}
+      />
     </div>
   );
 };
