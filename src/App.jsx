@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import personService from './services/persons';
 
 const Filter = ({ newFilter, handleFilter }) => {
   return (
@@ -62,7 +62,8 @@ const App = () => {
   const [newFilter, setNewFilter] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then((res) => {
+    personService.getAll().then((res) => {
+      console.log(res.data);
       setPersons(res.data);
     });
   }, []);
@@ -79,7 +80,7 @@ const App = () => {
     if (findDup) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      axios.post('http://localhost:3001/persons', newPerson).then((res) => {
+      personService.create(newPerson).then((res) => {
         setPersons(persons.concat(res.data));
         setNewName('');
         setNewNumber('');
