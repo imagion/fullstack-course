@@ -14,10 +14,10 @@ const PersonForm = ({
   setNewName,
   newNumber,
   setNewNumber,
-  handleSubmit,
+  addNote,
 }) => {
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={addNote}>
       <div>
         name:{' '}
         <input value={newName} onChange={(e) => setNewName(e.target.value)} />
@@ -67,7 +67,7 @@ const App = () => {
     });
   }, []);
 
-  const handleSubmit = (e) => {
+  const addNote = (e) => {
     e.preventDefault();
     const newPerson = {
       name: newName,
@@ -79,9 +79,11 @@ const App = () => {
     if (findDup) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      setPersons(persons.concat(newPerson));
-      setNewName('');
-      setNewNumber('');
+      axios.post('http://localhost:3001/persons', newPerson).then((res) => {
+        setPersons(persons.concat(res.data));
+        setNewName('');
+        setNewNumber('');
+      });
     }
   };
 
@@ -107,7 +109,7 @@ const App = () => {
         setNewName={setNewName}
         newNumber={newNumber}
         setNewNumber={setNewNumber}
-        handleSubmit={handleSubmit}
+        addNote={addNote}
       />
 
       <h3>Numbers</h3>
