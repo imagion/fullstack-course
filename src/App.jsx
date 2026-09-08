@@ -26,8 +26,22 @@ const App = () => {
 
     const findDup = persons.find((person) => person.name === newName);
 
+    const confirmation = confirm(
+      `${newName} is already in the phonebook, replace the old number with a new one?`,
+    );
+
     if (findDup) {
-      alert(`${newName} is already added to phonebook`);
+      if (confirmation) {
+        personService.update(findDup.id, newPerson).then((res) => {
+          setPersons(
+            persons.map((person) =>
+              person.id === findDup.id ? res.data : person,
+            ),
+          );
+          setNewName('');
+          setNewNumber('');
+        });
+      }
     } else {
       personService.create(newPerson).then((res) => {
         setPersons(persons.concat(res.data));
