@@ -1,58 +1,8 @@
 import { useEffect, useState } from 'react';
 import personService from './services/persons';
-
-const Filter = ({ newFilter, handleFilter }) => {
-  return (
-    <div>
-      filter shown with <input value={newFilter} onChange={handleFilter} />
-    </div>
-  );
-};
-
-const PersonForm = ({
-  newName,
-  setNewName,
-  newNumber,
-  setNewNumber,
-  addNote,
-}) => {
-  return (
-    <form onSubmit={addNote}>
-      <div>
-        name:{' '}
-        <input value={newName} onChange={(e) => setNewName(e.target.value)} />
-      </div>
-      <div>
-        number:{' '}
-        <input
-          value={newNumber}
-          onChange={(e) => setNewNumber(e.target.value)}
-        />
-      </div>
-      <div>
-        <button type='submit'>add</button>
-      </div>
-    </form>
-  );
-};
-
-const Persons = ({ persons, filterPersons, newFilter }) => {
-  return (
-    <div>
-      {newFilter
-        ? filterPersons.map((person) => (
-            <div key={person.name}>
-              {person.name} {person.number}
-            </div>
-          ))
-        : persons.map((person) => (
-            <div key={person.name}>
-              {person.name} {person.number}
-            </div>
-          ))}
-    </div>
-  );
-};
+import Persons from './components/Persons';
+import PersonForm from './components/PersonForm';
+import Filter from './components/Filter';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -63,7 +13,6 @@ const App = () => {
 
   useEffect(() => {
     personService.getAll().then((res) => {
-      console.log(res.data);
       setPersons(res.data);
     });
   }, []);
@@ -97,6 +46,14 @@ const App = () => {
     setFilterPersons(filterThings);
   };
 
+  const handleDelete = (person) => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService.remove(person.id).then((res) => {
+        setPersons(persons.filter((person) => person.id !== res.data.id));
+      });
+    }
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -119,6 +76,7 @@ const App = () => {
         persons={persons}
         filterPersons={filterPersons}
         newFilter={newFilter}
+        handleDelete={handleDelete}
       />
     </div>
   );
