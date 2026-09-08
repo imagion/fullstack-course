@@ -3,7 +3,7 @@ import personService from './services/persons';
 import Persons from './components/Persons';
 import PersonForm from './components/PersonForm';
 import Filter from './components/Filter';
-import Notification from './components/Notification';
+import { Notification, Error } from './components/Notification';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -12,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [newFilter, setNewFilter] = useState('');
   const [notification, setNotification] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     personService.getAll().then((res) => {
@@ -68,12 +69,25 @@ const App = () => {
     setFilterPersons(filterThings);
   };
 
-  const handleDelete = (person) => {
-    if (window.confirm(`Delete ${person.name}?`)) {
-      personService.remove(person.id).then((res) => {
-        setPersons(persons.filter((person) => person.id !== res.data.id));
-      });
+  const handleDelete = (name, id) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      personService
+        .remove(id)
+        .then((res) => {
+          setPersons(persons.filter((person) => person.id !== res.data.id));
+          setError(`Deleted ${name}`);
+        })
+        .catch(() => {
+          setError(
+            `Information of ${name} has already been removed from server`,
+          );
+          setPersons(persons.filter((person) => person.id !== id));
+        });
     }
+
+    setTimeout(() => {
+      setError(``);
+    }, 2000);
   };
 
   return (
@@ -81,6 +95,7 @@ const App = () => {
       <h2>Phonebook</h2>
 
       <Notification notification={notification} />
+      <Error error={error} />
 
       <Filter newFilter={newFilter} handleFilter={handleFilter} />
 
