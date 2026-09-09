@@ -1,123 +1,56 @@
 import { useEffect, useState } from 'react';
-import personService from './services/persons';
-import Persons from './components/Persons';
-import PersonForm from './components/PersonForm';
-import Filter from './components/Filter';
-import { Notification, Error } from './components/Notification';
+import axios from 'axios';
+import CountryItem from './components/CountryItem';
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
-  const [filterPersons, setFilterPersons] = useState([]);
-  const [newName, setNewName] = useState('');
-  const [newNumber, setNewNumber] = useState('');
+  const [countries, setCountries] = useState(null);
   const [newFilter, setNewFilter] = useState('');
-  const [notification, setNotification] = useState('');
-  const [error, setError] = useState('');
+  const [filteredCountries, setFilteredCountries] = useState(null);
 
   useEffect(() => {
-    personService.getAll().then((res) => {
-      setPersons(res.data);
-    });
-  }, []);
-
-  const addNote = (e) => {
-    e.preventDefault();
-    const newPerson = {
-      name: newName,
-      number: newNumber,
-    };
-
-    const findDup = persons.find((person) => person.name === newName);
-
-    const confirmation = confirm(
-      `${newName} is already in the phonebook, replace the old number with a new one?`,
-    );
-
-    if (findDup) {
-      if (confirmation) {
-        personService.update(findDup.id, newPerson).then((res) => {
-          setPersons(
-            persons.map((person) =>
-              person.id === findDup.id ? res.data : person,
-            ),
-          );
-          setNewName('');
-          setNewNumber('');
-          setNotification(`Edited ${newPerson.name}`);
-        });
-      }
-    } else {
-      personService.create(newPerson).then((res) => {
-        setPersons(persons.concat(res.data));
-        setNewName('');
-        setNewNumber('');
-        setNotification(`Added ${newPerson.name}`);
+    axios
+      .get('https://studies.cs.helsinki.fi/restcountries/api/all')
+      .then((res) => {
+        setCountries(res.data);
       });
-    }
-
-    setTimeout(() => {
-      setNotification(``);
-    }, 2000);
-  };
+  }, []);
 
   const handleFilter = (e) => {
     setNewFilter(e.target.value);
 
-    const filterThings = persons.filter((person) => {
-      return person.name.toLowerCase().includes(e.target.value.toLowerCase());
+    const filterData = countries.filter((country) => {
+      return country.name.common
+        .toLowerCase()
+        .includes(e.target.value.toLowerCase());
     });
-    setFilterPersons(filterThings);
+    setFilteredCountries(filterData);
   };
 
-  const handleDelete = (name, id) => {
-    if (window.confirm(`Delete ${name}?`)) {
-      personService
-        .remove(id)
-        .then((res) => {
-          setPersons(persons.filter((person) => person.id !== res.data.id));
-          setError(`Deleted ${name}`);
-        })
-        .catch(() => {
-          setError(
-            `Information of ${name} has already been removed from server`,
-          );
-          setPersons(persons.filter((person) => person.id !== id));
-        });
-    }
-
-    setTimeout(() => {
-      setError(``);
-    }, 2000);
-  };
+  {
+    !countries && null;
+  }
 
   return (
-    <div>
-      <h2>Phonebook</h2>
-
-      <Notification notification={notification} />
-      <Error error={error} />
-
-      <Filter newFilter={newFilter} handleFilter={handleFilter} />
-
-      <h3>add a new</h3>
-
-      <PersonForm
-        newName={newName}
-        setNewName={setNewName}
-        newNumber={newNumber}
-        setNewNumber={setNewNumber}
-        addNote={addNote}
-      />
-
-      <h3>Numbers</h3>
-
-      <Persons
-        persons={persons}
-        filterPersons={filterPersons}
-        newFilter={newFilter}
-        handleDelete={handleDelete}
-      />
-    </div>
+    <>
+      <div>
+        find countries <input value={newFilter} onChange={handleFilter} />
+      </div>
+      {filteredCountries && (
+        <>
+          {filteredCountries.length > 10 ? (
+            <div>Too many matches, specify another filter</div>
+          ) : filteredCountries.length > 1 ? (
+            filteredCountries.map((country) => (
+              <div key={country.ccn3}>{country.name.common}</div>
+            ))
+          ) : (
+            filteredCountries.map((country) => (
+              <CountryItem key={country.ccn3} country={country} />
+            ))
+          )}
+        </>
+      )}
+    </>
   );
 };
 
