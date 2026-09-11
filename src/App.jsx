@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import CountryItem from './components/CountryItem';
+import FilterList from './components/FilterList';
 
 const App = () => {
   const [countries, setCountries] = useState(null);
   const [newFilter, setNewFilter] = useState('');
   const [filteredCountries, setFilteredCountries] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   useEffect(() => {
     axios
@@ -16,7 +18,12 @@ const App = () => {
   }, []);
 
   const handleFilter = (e) => {
-    setNewFilter(e.target.value);
+    const value = e.target.value;
+
+    setNewFilter(value);
+    setSelectedCountry(null);
+
+    if (!countries) return;
 
     const filterData = countries.filter((country) => {
       return country.name.common
@@ -26,9 +33,11 @@ const App = () => {
     setFilteredCountries(filterData);
   };
 
-  {
-    !countries && null;
-  }
+  const handleShow = (country) => {
+    setSelectedCountry(country);
+  };
+
+  if (!countries) return;
 
   return (
     <>
@@ -39,15 +48,19 @@ const App = () => {
         <>
           {filteredCountries.length > 10 ? (
             <div>Too many matches, specify another filter</div>
+          ) : selectedCountry ? (
+            <CountryItem country={selectedCountry} />
+          ) : filteredCountries.length === 1 ? (
+            <CountryItem country={filteredCountries[0]} />
           ) : filteredCountries.length > 1 ? (
             filteredCountries.map((country) => (
-              <div key={country.ccn3}>{country.name.common}</div>
+              <FilterList
+                key={country.ccn3}
+                country={country}
+                handleShow={handleShow}
+              />
             ))
-          ) : (
-            filteredCountries.map((country) => (
-              <CountryItem key={country.ccn3} country={country} />
-            ))
-          )}
+          ) : null}
         </>
       )}
     </>
