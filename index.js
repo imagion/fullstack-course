@@ -24,12 +24,21 @@ let persons = [
   },
 ];
 
+const currentTime = new Date();
+
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>');
 });
 
 app.get('/api/persons', (req, res) => {
   res.json(persons);
+});
+
+app.get('/api/info', (req, res) => {
+  res.send(`
+    <div>Phonebook has info for ${persons.length} people</div>
+    <div>${currentTime}</div>
+  `);
 });
 
 const PORT = 3001;
