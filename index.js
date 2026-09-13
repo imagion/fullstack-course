@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+app.use(express.json());
+
 let persons = [
   {
     id: '1',
@@ -26,6 +28,11 @@ let persons = [
 
 const currentTime = new Date();
 
+const generateId = () => {
+  const maxId = Math.floor(Math.random() * 999999999);
+  return String(maxId + 1);
+};
+
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>');
 });
@@ -46,6 +53,26 @@ app.delete('/api/persons/:id', (req, res) => {
   persons = persons.filter((note) => note.id !== id);
 
   res.status(204).end();
+});
+
+app.post('/api/persons', (req, res) => {
+  const body = req.body;
+
+  if (!body.name) {
+    return res.status(400).json({
+      error: 'name missing',
+    });
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generateId(),
+  };
+
+  persons = persons.concat(person);
+
+  res.json(person);
 });
 
 app.get('/api/info', (req, res) => {
