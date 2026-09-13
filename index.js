@@ -57,10 +57,19 @@ app.delete('/api/persons/:id', (req, res) => {
 
 app.post('/api/persons', (req, res) => {
   const body = req.body;
+  const duplicate = persons.filter((person) => person.name === body.name);
 
-  if (!body.name) {
+  // console.log(body);
+
+  if (!body.name || !body.number) {
     return res.status(400).json({
-      error: 'name missing',
+      error: 'The name or number is missing',
+    });
+  }
+
+  if (duplicate) {
+    return res.status(400).json({
+      error: 'The name already exists in the phonebook',
     });
   }
 
