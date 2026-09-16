@@ -15,6 +15,14 @@ morgan.token('data', (req) => {
 app.use(
   morgan(`:method :url :status :res[content-length] - :response-time ms :data`),
 );
+morgan.token('data', (req) => {
+  console.log(typeof req.body, req.body);
+  return req.method === 'POST' ? JSON.stringify(req.body) : '';
+});
+
+app.use(
+  morgan(`:method :url :status :res[content-length] - :response-time ms :data`),
+);
 
 let persons = [
   {
