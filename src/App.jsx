@@ -22,42 +22,68 @@ const App = () => {
 
   const addNote = (e) => {
     e.preventDefault();
+
     const newPerson = {
       name: newName,
       number: newNumber,
     };
 
-    const findDup = persons.find((person) => person.name === newName);
-
-    const confirmation = confirm(
-      `${newName} is already in the phonebook, replace the old number with a new one?`,
+    const findDup = persons.find(
+      (person) =>
+        person.name.trim().toLowerCase() === newName.trim().toLowerCase(),
     );
 
     if (findDup) {
+      const confirmation = window.confirm(
+        `${newName} is already in the phonebook, replace the old number with a new one?`,
+      );
+
       if (confirmation) {
-        personService.update(findDup.id, newPerson).then((res) => {
-          setPersons(
-            persons.map((person) =>
-              person.id === findDup.id ? res.data : person,
-            ),
-          );
-          setNewName('');
-          setNewNumber('');
-          setNotification(`Edited ${newPerson.name}`);
-        });
+        personService
+          .update(findDup.id, newPerson)
+          .then((res) => {
+            setPersons(
+              persons.map((person) =>
+                person.id === findDup.id ? res.data : person,
+              ),
+            );
+            setNewName('');
+            setNewNumber('');
+            setNotification(`Edited ${newPerson.name}`);
+
+            setTimeout(() => {
+              setNotification('');
+            }, 2000);
+          })
+          .catch((error) => {
+            console.error(error);
+            setError(error.response.data.error);
+            setTimeout(() => {
+              setError('');
+            }, 2000);
+          });
       }
     } else {
-      personService.create(newPerson).then((res) => {
-        setPersons(persons.concat(res.data));
-        setNewName('');
-        setNewNumber('');
-        setNotification(`Added ${newPerson.name}`);
-      });
-    }
+      personService
+        .create(newPerson)
+        .then((res) => {
+          setPersons(persons.concat(res.data));
+          setNewName('');
+          setNewNumber('');
+          setNotification(`Added ${newPerson.name}`);
 
-    setTimeout(() => {
-      setNotification(``);
-    }, 2000);
+          setTimeout(() => {
+            setNotification('');
+          }, 2000);
+        })
+        .catch((error) => {
+          console.error(error);
+          setError(error.response.data.error);
+          setTimeout(() => {
+            setError('');
+          }, 2000);
+        });
+    }
   };
 
   const handleFilter = (e) => {
