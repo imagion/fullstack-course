@@ -11,8 +11,8 @@
     "build:ui": "rm -rf dist && cd ../frontend/ && npm run build && cp -r dist ../fullstack-course"
   },
   "dependencies": {
-    "cors": "^2.8.6",
     "express": "^5.2.1",
+    "mongoose": "^9.10.1",
     "morgan": "1.11"
   }
 }
