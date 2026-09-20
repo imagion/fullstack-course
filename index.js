@@ -46,17 +46,10 @@ app.delete('/api/persons/:id', (req, res, next) => {
 
 app.post('/api/persons', (req, res) => {
   const body = req.body;
-  const duplicate = persons.some((person) => person.name === body.name);
 
   if (!body.name || !body.number) {
     return res.status(400).json({
       error: 'The name or number is missing',
-    });
-  }
-
-  if (duplicate) {
-    return res.status(400).json({
-      error: 'The name already exists in the phonebook',
     });
   }
 
@@ -69,6 +62,25 @@ app.post('/api/persons', (req, res) => {
   person.save().then((savedPerson) => {
     res.json(savedPerson);
   });
+});
+
+app.put('/api/persons/:id', (req, res, next) => {
+  const { name, number } = req.body;
+
+  Person.findById(req.params.id)
+    .then((person) => {
+      if (!person) {
+        return res.status(404).end();
+      }
+
+      person.name = name;
+      person.number = number;
+
+      return person.save().then((updatedPerson) => {
+        res.json(updatedPerson);
+      });
+    })
+    .catch((error) => next(error));
 });
 
 app.get('/api/info', (req, res) => {
