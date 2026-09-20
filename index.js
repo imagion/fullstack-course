@@ -84,10 +84,12 @@ app.put('/api/persons/:id', (req, res, next) => {
 });
 
 app.get('/api/info', (req, res) => {
-  res.send(`
-    <div>Phonebook has info for ${persons.length} people</div>
-    <div>${currentTime}</div>
-  `);
+  Person.find({}).then((persons) => {
+    res.send(`
+      <div>Phonebook has info for ${persons.length} people</div>
+      <div>${currentTime}</div>
+    `);
+  });
 });
 
 const errorHandler = (error, req, res, next) => {
