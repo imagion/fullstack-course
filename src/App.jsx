@@ -23,6 +23,7 @@ const App = () => {
   const addNote = (e) => {
     e.preventDefault();
 
+
     const newPerson = {
       name: newName,
       number: newNumber,
@@ -31,9 +32,16 @@ const App = () => {
     const findDup = persons.find(
       (person) =>
         person.name.trim().toLowerCase() === newName.trim().toLowerCase(),
+    const findDup = persons.find(
+      (person) =>
+        person.name.trim().toLowerCase() === newName.trim().toLowerCase(),
     );
 
     if (findDup) {
+      const confirmation = window.confirm(
+        `${newName} is already in the phonebook, replace the old number with a new one?`,
+      );
+
       const confirmation = window.confirm(
         `${newName} is already in the phonebook, replace the old number with a new one?`,
       );
