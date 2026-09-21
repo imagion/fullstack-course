@@ -45,6 +45,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 });
 
 app.post('/api/persons', (req, res, next) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body;
 
   if (!body.name || !body.number) {
@@ -59,6 +60,12 @@ app.post('/api/persons', (req, res, next) => {
     id: generateId(),
   });
 
+  person
+    .save()
+    .then((savedPerson) => {
+      res.json(savedPerson);
+    })
+    .catch((error) => next(error));
   person
     .save()
     .then((savedPerson) => {
