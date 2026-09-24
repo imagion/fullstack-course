@@ -12,7 +12,14 @@ const totalLikes = (blogs) => {
   return likes.reduce((acc, red) => acc + red, 0);
 };
 
+const favourite = (blogs) => {
+  return blogs.reduce((acc, red) => {
+    return acc.likes >= red.likes ? acc : red;
+  });
+};
+
 module.exports = {
   dummy,
   totalLikes,
+  favourite,
 };
