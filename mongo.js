@@ -20,6 +20,14 @@ const blogSchema = new mongoose.Schema({
   likes: Number,
 });
 
+blogSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
+
 const Blog = mongoose.model('Blog', blogSchema);
 
 const blog = new Blog({
@@ -31,5 +39,6 @@ const blog = new Blog({
 
 blog.save().then((result) => {
   console.log('blog saved!');
+  console.log(result.toJSON());
   mongoose.connection.close();
 });
