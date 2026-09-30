@@ -85,6 +85,21 @@ test('400 if title or url are missing', async () => {
   await api.post('/api/blogs').send({ author: 'author' }).expect(400);
 });
 
+test('successfully created a new blog post', async () => {
+  const newBlog = {
+    title: 'testing title',
+    author: 'testing author',
+    url: 'testing url',
+    likes: 9,
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
