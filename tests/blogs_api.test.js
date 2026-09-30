@@ -69,6 +69,18 @@ test('successfully created a new blog post', async () => {
   assert.strictEqual(response.body.length, initialBlogs.length + 1);
 });
 
+test('likes defaults to 0 if missing', async () => {
+  const newBlog = {
+    title: 'testing title',
+    author: 'testing author',
+    url: 'testing url',
+  };
+
+  const response = await api.post('/api/blogs').send(newBlog).expect(201);
+
+  assert.strictEqual(response.body.likes, 0);
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
