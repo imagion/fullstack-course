@@ -81,6 +81,10 @@ test('likes defaults to 0 if missing', async () => {
   assert.strictEqual(response.body.likes, 0);
 });
 
+test('400 if title or url are missing', async () => {
+  await api.post('/api/blogs').send({ author: 'author' }).expect(400);
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
