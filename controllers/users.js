@@ -3,7 +3,10 @@ const usersRouter = require('express').Router();
 const User = require('../models/user');
 
 usersRouter.get('/', async (request, response) => {
+<<<<<<< HEAD
   // const users = await User.find({});
+=======
+>>>>>>> 36d024b51b13189629eabbf33c9b0497945d9c7d
   const users = await User.find({}).populate('blogs', {
     title: 1,
     author: 1,
