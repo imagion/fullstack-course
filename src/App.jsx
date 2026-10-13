@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import Blog from './components/Blog';
+import { Error, Notification } from './components/Notification';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -9,6 +10,7 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [notification, setNotification] = useState(null);
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
@@ -55,16 +57,17 @@ const App = () => {
   const handleCreate = (e) => {
     e.preventDefault();
 
-    console.log('USER: ', user);
-
-    console.log('created: ', title, author, url);
+    setNotification(`A new blog: ${title} by ${author} added`);
+    setTimeout(() => {
+      setNotification(null);
+    }, 5000);
     blogService.create({ title, author, url });
   };
 
   if (user === null) {
     return (
       <div>
-        <div error={error} />
+        <Error error={error} />
 
         <h2>Log in to application</h2>
         <form onSubmit={handleLogin}>
@@ -97,6 +100,8 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
+
+      <Notification notification={notification} />
 
       <div>
         Hello, {user.name}! <button onClick={handleLogout}>Logout</button>
