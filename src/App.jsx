@@ -3,6 +3,8 @@ import blogService from './services/blogs';
 import loginService from './services/login';
 import Blog from './components/Blog';
 import { Error, Notification } from './components/Notification';
+import BlogForm from './components/BlogForm';
+import Togglable from './components/Togglable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -14,6 +16,7 @@ const App = () => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
+  // const blogFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((bloinitialBlogs) => setBlogs(bloinitialBlogs));
@@ -54,7 +57,7 @@ const App = () => {
     localStorage.removeItem('loggedUser');
   };
 
-  const handleCreate = (e) => {
+  const addBlog = (e) => {
     e.preventDefault();
 
     setNotification(`A new blog: ${title} by ${author} added`);
@@ -107,40 +110,17 @@ const App = () => {
         Hello, {user.name}! <button onClick={handleLogout}>Logout</button>
       </div>
 
-      <h2>Create new</h2>
-      <form onSubmit={handleCreate}>
-        <div>
-          <label>
-            title:
-            <input
-              type='text'
-              value={title}
-              onChange={({ target }) => setTitle(target.value)}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            author:
-            <input
-              type='text'
-              value={author}
-              onChange={({ target }) => setAuthor(target.value)}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            url:
-            <input
-              type='text'
-              value={url}
-              onChange={({ target }) => setUrl(target.value)}
-            />
-          </label>
-        </div>
-        <button>create</button>
-      </form>
+      <Togglable buttonLabel='create new blog'>
+        <BlogForm
+          addBlog={addBlog}
+          title={title}
+          setTitle={setTitle}
+          author={author}
+          setAuthor={setAuthor}
+          url={url}
+          setUrl={setUrl}
+        />
+      </Togglable>
 
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
