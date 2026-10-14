@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, blogService }) => {
   const [isHidden, setIsHidden] = useState(true);
 
   const blogStyle = {
@@ -9,6 +9,13 @@ const Blog = ({ blog }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
+  };
+
+  const handleLike = () => {
+    console.log('blog id:', blog.id);
+    console.log('user id:', blog.user.id);
+    console.log('likes:', blog.likes);
+    blogService.update(`${blog.id}`, { ...blog, likes: blog.likes + 1 });
   };
 
   return (
@@ -23,7 +30,7 @@ const Blog = ({ blog }) => {
         <div>
           {blog.url}
           <br />
-          likes: {blog.likes}
+          likes: {blog.likes} <button onClick={handleLike}>like</button>
           <br />
           {blog.author}
         </div>

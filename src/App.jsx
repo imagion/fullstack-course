@@ -5,7 +5,6 @@ import { Error, Notification } from './components/Notification';
 import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
 import BlogsList from './components/BlogsList';
-import Blog from './components/Blog';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -17,7 +16,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then((bloinitialBlogs) => setBlogs(bloinitialBlogs));
-  }, []);
+  }, [blogs]);
 
   useEffect(() => {
     const loggedUserJSON = localStorage.getItem('loggedUser');
@@ -102,7 +101,7 @@ const App = () => {
               setNotification={setNotification}
             />
           </Togglable>
-          <BlogsList blogs={blogs} />
+          <BlogsList blogs={blogs} blogService={blogService} />
         </div>
       )}
     </>
