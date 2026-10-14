@@ -1,12 +1,25 @@
-const BlogForm = ({
-  addBlog,
-  title,
-  setTitle,
-  author,
-  setAuthor,
-  url,
-  setUrl,
-}) => {
+import { useState } from 'react';
+
+const BlogForm = ({ blogService, setNotification }) => {
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [url, setUrl] = useState('');
+
+  const addBlog = (e) => {
+    e.preventDefault();
+
+    setNotification(`A new blog: ${title} by ${author} added`);
+    setTimeout(() => {
+      setNotification(null);
+    }, 5000);
+
+    blogService.create({ title, author, url });
+
+    setTitle('');
+    setAuthor('');
+    setUrl('');
+  };
+
   return (
     <>
       <h2>Create a new blog</h2>

@@ -13,10 +13,6 @@ const App = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState(null);
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [url, setUrl] = useState('');
-  // const blogFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((bloinitialBlogs) => setBlogs(bloinitialBlogs));
@@ -55,16 +51,6 @@ const App = () => {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('loggedUser');
-  };
-
-  const addBlog = (e) => {
-    e.preventDefault();
-
-    setNotification(`A new blog: ${title} by ${author} added`);
-    setTimeout(() => {
-      setNotification(null);
-    }, 5000);
-    blogService.create({ title, author, url });
   };
 
   if (user === null) {
@@ -111,15 +97,7 @@ const App = () => {
       </div>
 
       <Togglable buttonLabel='create new blog'>
-        <BlogForm
-          addBlog={addBlog}
-          title={title}
-          setTitle={setTitle}
-          author={author}
-          setAuthor={setAuthor}
-          url={url}
-          setUrl={setUrl}
-        />
+        <BlogForm blogService={blogService} setNotification={setNotification} />
       </Togglable>
 
       {blogs.map((blog) => (
