@@ -21,7 +21,7 @@ const Blog = ({ blog, blogService }) => {
   return (
     <div style={blogStyle}>
       <div>
-        {blog.title}
+        {blog.title} {blog.author}
         <button onClick={() => setIsHidden(!isHidden)}>
           {isHidden ? 'view' : 'hide'}
         </button>
@@ -32,7 +32,7 @@ const Blog = ({ blog, blogService }) => {
           <br />
           likes: {blog.likes} <button onClick={handleLike}>like</button>
           <br />
-          {blog.author}
+          {blog.user.name}
         </div>
       )}
     </div>
