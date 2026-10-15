@@ -18,6 +18,13 @@ const Blog = ({ blog, blogService }) => {
     blogService.update(`${blog.id}`, { ...blog, likes: blog.likes + 1 });
   };
 
+  const handleDelete = () => {
+    const confirmMessage = `Remove blog ${blog.title} by ${blog.author}`;
+    if (confirm(confirmMessage)) {
+      blogService.remove(blog.id);
+    }
+  };
+
   return (
     <div style={blogStyle}>
       <div>
@@ -33,6 +40,8 @@ const Blog = ({ blog, blogService }) => {
           likes: {blog.likes} <button onClick={handleLike}>like</button>
           <br />
           {blog.user.name}
+          <br />
+          <button onClick={handleDelete}>remove</button>
         </div>
       )}
     </div>
