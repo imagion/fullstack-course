@@ -12,9 +12,6 @@ const Blog = ({ blog, blogService }) => {
   };
 
   const handleLike = () => {
-    console.log('blog id:', blog.id);
-    console.log('user id:', blog.user.id);
-    console.log('likes:', blog.likes);
     blogService.update(`${blog.id}`, { ...blog, likes: blog.likes + 1 });
   };
 
