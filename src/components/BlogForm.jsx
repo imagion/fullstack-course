@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const BlogForm = ({ blogService, setNotification }) => {
+const BlogForm = ({ blogService, setNotification, blogs, setBlogs }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
@@ -13,7 +13,9 @@ const BlogForm = ({ blogService, setNotification }) => {
       setNotification(null);
     }, 5000);
 
-    blogService.create({ title, author, url });
+    blogService.create({ title, author, url }).then((returnedBlog) => {
+      setBlogs(blogs.concat(returnedBlog));
+    });
 
     setTitle('');
     setAuthor('');
