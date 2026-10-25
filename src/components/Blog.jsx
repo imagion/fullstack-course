@@ -11,17 +11,6 @@ const Blog = ({ blog, blogService }) => {
     marginBottom: 5,
   };
 
-  const handleLike = () => {
-    blogService.update(`${blog.id}`, { ...blog, likes: blog.likes + 1 });
-  };
-
-  const handleDelete = () => {
-    const confirmMessage = `Remove blog ${blog.title} by ${blog.author}`;
-    if (confirm(confirmMessage)) {
-      blogService.remove(blog.id);
-    }
-  };
-
   return (
     <div style={blogStyle}>
       <div>

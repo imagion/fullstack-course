@@ -8,6 +8,7 @@ import Togglable from './components/Togglable';
 import BlogsList from './components/BlogsList';
 import Home from './components/Home';
 import Login from './components/Login';
+import Blog from './components/Blog';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -31,25 +32,36 @@ const App = () => {
     localStorage.removeItem('loggedUser');
   };
 
-  const padding = {
-    padding: 5,
+  const handleLike = () => {
+    blogService.update(`${blog.id}`, { ...blog, likes: blog.likes + 1 });
+  };
+
+  const handleDelete = () => {
+    const confirmMessage = `Remove blog ${blog.title} by ${blog.author}`;
+    if (confirm(confirmMessage)) {
+      blogService.remove(blog.id);
+    }
   };
 
   return (
     <Router>
       <div>
-        <Link style={padding} to='/'>
+        <Link style={{ padding: '5px' }} to='/'>
           home
         </Link>
         {user ? (
           <button onClick={handleLogout}>Logout</button>
         ) : (
-          <Link style={padding} to='/login'>
+          <Link style={{ padding: '5px' }} to='/login'>
             login
           </Link>
         )}
       </div>
       <Routes>
+        <Route
+          path='/blogs/:id'
+          element={<Blog blogs={blogs} blogService={blogService} />}
+        />
         <Route
           path='/login'
           element={<Login user={user} setUser={setUser} />}
