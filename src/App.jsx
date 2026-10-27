@@ -13,9 +13,13 @@ import Blog from './components/Blog';
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
+  const [blogsLoaded, setBlogsLoaded] = useState(false);
 
   useEffect(() => {
-    blogService.getAll().then((initialBlogs) => setBlogs(initialBlogs));
+    blogService.getAll().then((initialBlogs) => {
+      setBlogs(initialBlogs);
+      setBlogsLoaded(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -32,15 +36,24 @@ const App = () => {
     localStorage.removeItem('loggedUser');
   };
 
-  const handleLike = () => {
-    blogService.update(`${blog.id}`, { ...blog, likes: blog.likes + 1 });
+  const deleteBlog = async (id) => {
+    await blogService.remove(id);
+    setBlogs((previousBlogs) => previousBlogs.filter((blog) => blog.id !== id));
   };
 
-  const handleDelete = () => {
-    const confirmMessage = `Remove blog ${blog.title} by ${blog.author}`;
-    if (confirm(confirmMessage)) {
-      blogService.remove(blog.id);
-    }
+  const likeBlog = async (id) => {
+    const blog = blogs.find((blog) => blog.id === id);
+
+    if (!blog) return;
+
+    const updatedBlog = await blogService.update(id, {
+      ...blog,
+      likes: blog.likes + 1,
+    });
+
+    setBlogs((previousBlogs) =>
+      previousBlogs.map((item) => (item.id === id ? updatedBlog : item)),
+    );
   };
 
   return (
@@ -60,7 +73,14 @@ const App = () => {
       <Routes>
         <Route
           path='/blogs/:id'
-          element={<Blog blogs={blogs} blogService={blogService} />}
+          element={
+            <Blog
+              blogs={blogs}
+              blogsLoaded={blogsLoaded}
+              onLike={likeBlog}
+              onDelete={deleteBlog}
+            />
+          }
         />
         <Route
           path='/login'
@@ -70,62 +90,6 @@ const App = () => {
       </Routes>
     </Router>
   );
-
-  // if (user === null) {
-  //   return (
-  //     <div>
-  //       <Error error={error} />
-
-  //       <h2>Log in to application</h2>
-  //       <form onSubmit={handleLogin}>
-  //         <div>
-  //           <label>
-  //             username
-  //             <input
-  //               type='text'
-  //               value={username}
-  //               onChange={({ target }) => setUsername(target.value)}
-  //             />
-  //           </label>
-  //         </div>
-  //         <div>
-  //           <label>
-  //             password
-  //             <input
-  //               type='password'
-  //               value={password}
-  //               onChange={({ target }) => setPassword(target.value)}
-  //             />
-  //           </label>
-  //         </div>
-  //         <button>login</button>
-  //       </form>
-  //     </div>
-  //   );
-  // }
-
-  // return (
-  //   <>
-  //     {blogs && (
-  //       <div>
-  //         <h2>Blogs</h2>
-  //         <Notification notification={notification} />
-  //         <div>
-  //           Hello, {user.name}! <button onClick={handleLogout}>Logout</button>
-  //         </div>
-  //         <Togglable buttonLabel='create new blog'>
-  //           <BlogForm
-  //             blogService={blogService}
-  //             setNotification={setNotification}
-  //             blogs={blogs}
-  //             setBlogs={setBlogs}
-  //           />
-  //         </Togglable>
-  //         <BlogsList blogs={blogs} blogService={blogService} />
-  //       </div>
-  //     )}
-  //   </>
-  // );
 };
 
 export default App;

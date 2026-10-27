@@ -1,35 +1,45 @@
-import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
-const Blog = ({ blog, blogService }) => {
-  const [isHidden, setIsHidden] = useState(true);
+const Blog = ({ blogs, blogsLoaded, onLike, onDelete }) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
+  const blog = blogs.find((blog) => blog.id === id);
+
+  if (!blogsLoaded) {
+    return <p>Loading blog...</p>;
+  }
+
+  if (!blog) {
+    return <p>Blog not found</p>;
+  }
+
+  const handleLike = () => {
+    onLike(blog.id);
+  };
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm(
+      `Remove blog ${blog.title} by ${blog.author}`,
+    );
+
+    if (!confirmed) return;
+
+    await onDelete(blog.id);
+    navigate('/');
   };
 
   return (
-    <div style={blogStyle}>
-      <div>
+    <div className='blog'>
+      <h2>
         {blog.title} {blog.author}
-        <button onClick={() => setIsHidden(!isHidden)}>
-          {isHidden ? 'view' : 'hide'}
-        </button>
-      </div>
-      {!isHidden && (
-        <div>
-          {blog.url}
-          <br />
-          likes: {blog.likes} <button onClick={handleLike}>like</button>
-          <br />
-          {blog.user.name}
-          <br />
-          <button onClick={handleDelete}>remove</button>
-        </div>
-      )}
+      </h2>
+
+      <a href={blog.url}>{blog.url}</a>
+      <p>likes: {blog.likes}</p>
+      <button onClick={handleLike}>like</button>
+      <p>{blog.user.name}</p>
+      <button onClick={handleDelete}>remove</button>
     </div>
   );
 };
