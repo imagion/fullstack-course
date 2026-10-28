@@ -1,14 +1,10 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import blogService from './services/blogs';
-import loginService from './services/login';
-import { Error, Notification } from './components/Notification';
-import BlogForm from './components/BlogForm';
-import Togglable from './components/Togglable';
-import BlogsList from './components/BlogsList';
 import Home from './components/Home';
 import Login from './components/Login';
 import Blog from './components/Blog';
+import BlogForm from './components/BlogForm';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -63,7 +59,12 @@ const App = () => {
           home
         </Link>
         {user ? (
-          <button onClick={handleLogout}>Logout</button>
+          <>
+            <Link style={{ padding: '5px' }} to='/create'>
+              new blog
+            </Link>
+            <button onClick={handleLogout}>Logout</button>
+          </>
         ) : (
           <Link style={{ padding: '5px' }} to='/login'>
             login
@@ -85,6 +86,16 @@ const App = () => {
         <Route
           path='/login'
           element={<Login user={user} setUser={setUser} />}
+        />
+        <Route
+          path='/create'
+          element={
+            <BlogForm
+              blogService={blogService}
+              blogs={blogs}
+              setBlogs={setBlogs}
+            />
+          }
         />
         <Route path='/' element={<Home blogs={blogs} />} />
       </Routes>

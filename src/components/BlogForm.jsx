@@ -1,22 +1,25 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const BlogForm = ({ blogService, setNotification, blogs, setBlogs }) => {
+const BlogForm = ({ blogService, blogs, setBlogs }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
+  const navigate = useNavigate();
 
   const addBlog = (e) => {
     e.preventDefault();
 
-    setNotification(`A new blog: ${title} by ${author} added`);
-    setTimeout(() => {
-      setNotification(null);
-    }, 5000);
+    // setNotification(`A new blog: ${title} by ${author} added`);
+    // setTimeout(() => {
+    //   setNotification(null);
+    // }, 5000);
 
     blogService.create({ title, author, url }).then((returnedBlog) => {
       setBlogs(blogs.concat(returnedBlog));
     });
 
+    navigate('/');
     setTitle('');
     setAuthor('');
     setUrl('');
