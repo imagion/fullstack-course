@@ -1,25 +1,42 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import {
+  AppBar,
+  Box,
+  Button,
+  Container,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import blogService from './services/blogs';
 import Home from './components/Home';
 import Login from './components/Login';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
+import { Notification } from './components/Notification';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [blogsLoaded, setBlogsLoaded] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
-    blogService.getAll().then((initialBlogs) => {
-      setBlogs(initialBlogs);
-      setBlogsLoaded(true);
-    });
+    blogService
+      .getAll()
+      .then((initialBlogs) => {
+        setBlogs(initialBlogs);
+        setBlogsLoaded(true);
+      })
+      .catch((error) => {
+        console.error('Failed to load blogs:', error);
+        setBlogsLoaded(true);
+      });
   }, []);
 
   useEffect(() => {
     const loggedUserJSON = localStorage.getItem('loggedUser');
+
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
@@ -27,14 +44,26 @@ const App = () => {
     }
   }, []);
 
+  const showNotification = (text, type = 'success') => {
+    setNotification({ text, type });
+
+    setTimeout(() => {
+      setNotification(null);
+    }, 5000);
+  };
+
   const handleLogout = () => {
-    setUser(null);
     localStorage.removeItem('loggedUser');
+    blogService.setToken(null);
+    setUser(null);
   };
 
   const deleteBlog = async (id) => {
     await blogService.remove(id);
+
     setBlogs((previousBlogs) => previousBlogs.filter((blog) => blog.id !== id));
+
+    showNotification('Blog deleted', 'success');
   };
 
   const likeBlog = async (id) => {
@@ -54,51 +83,77 @@ const App = () => {
 
   return (
     <Router>
-      <div>
-        <Link style={{ padding: '5px' }} to='/'>
-          home
-        </Link>
-        {user ? (
-          <>
-            <Link style={{ padding: '5px' }} to='/create'>
-              new blog
-            </Link>
-            <button onClick={handleLogout}>Logout</button>
-          </>
-        ) : (
-          <Link style={{ padding: '5px' }} to='/login'>
-            login
-          </Link>
-        )}
-      </div>
-      <Routes>
-        <Route
-          path='/blogs/:id'
-          element={
-            <Blog
-              blogs={blogs}
-              blogsLoaded={blogsLoaded}
-              onLike={likeBlog}
-              onDelete={deleteBlog}
+      <AppBar position='static'>
+        <Toolbar sx={{ gap: 2, flexWrap: 'wrap' }}>
+          <Typography variant='h6' sx={{ flexGrow: 1 }}>
+            Bloglist
+          </Typography>
+
+          <Button color='inherit' component={Link} to='/'>
+            Home
+          </Button>
+
+          {user ? (
+            <>
+              <Button color='inherit' component={Link} to='/create'>
+                New blog
+              </Button>
+
+              <Button color='inherit' onClick={handleLogout}>
+                Logout
+              </Button>
+            </>
+          ) : (
+            <Button color='inherit' component={Link} to='/login'>
+              Login
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth='md'>
+        <Box sx={{ mt: 3 }}>
+          <Notification notification={notification} />
+
+          <Routes>
+            <Route
+              path='/'
+              element={
+                <Home
+                  blogs={blogs}
+                  blogsLoaded={blogsLoaded}
+                  user={user}
+                  blogService={blogService}
+                  setBlogs={setBlogs}
+                  showNotification={showNotification}
+                />
+              }
             />
-          }
-        />
-        <Route
-          path='/login'
-          element={<Login user={user} setUser={setUser} />}
-        />
-        <Route
-          path='/create'
-          element={
-            <BlogForm
-              blogService={blogService}
-              blogs={blogs}
-              setBlogs={setBlogs}
+
+            <Route path='/login' element={<Login setUser={setUser} />} />
+
+            <Route
+              path='/create'
+              element={
+                <BlogForm blogService={blogService} setBlogs={setBlogs} />
+              }
             />
-          }
-        />
-        <Route path='/' element={<Home blogs={blogs} />} />
-      </Routes>
+
+            <Route
+              path='/blogs/:id'
+              element={
+                <Blog
+                  blogs={blogs}
+                  blogsLoaded={blogsLoaded}
+                  user={user}
+                  onLike={likeBlog}
+                  onDelete={deleteBlog}
+                />
+              }
+            />
+          </Routes>
+        </Box>
+      </Container>
     </Router>
   );
 };

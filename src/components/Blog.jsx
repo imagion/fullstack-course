@@ -1,6 +1,13 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Paper,
+  Typography,
+  Button,
+  Stack,
+  Link as MuiLink,
+} from '@mui/material';
 
-const Blog = ({ blogs, blogsLoaded, onLike, onDelete }) => {
+const Blog = ({ blogs, blogsLoaded, user, onLike, onDelete }) => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -14,10 +21,6 @@ const Blog = ({ blogs, blogsLoaded, onLike, onDelete }) => {
     return <p>Blog not found</p>;
   }
 
-  const handleLike = () => {
-    onLike(blog.id);
-  };
-
   const handleDelete = async () => {
     const confirmed = window.confirm(
       `Remove blog ${blog.title} by ${blog.author}`,
@@ -25,22 +28,50 @@ const Blog = ({ blogs, blogsLoaded, onLike, onDelete }) => {
 
     if (!confirmed) return;
 
-    await onDelete(blog.id);
-    navigate('/');
+    try {
+      await onDelete(blog.id);
+      navigate('/');
+    } catch (error) {
+      console.error('Failed to delete blog:', error);
+    }
   };
 
-  return (
-    <div className='blog'>
-      <h2>
-        {blog.title} {blog.author}
-      </h2>
+  const isOwner = user.username === blog.user.username;
 
-      <a href={blog.url}>{blog.url}</a>
-      <p>likes: {blog.likes}</p>
-      <button onClick={handleLike}>like</button>
-      <p>{blog.user.name}</p>
-      <button onClick={handleDelete}>remove</button>
-    </div>
+  return (
+    <Paper elevation={3} sx={{ p: 3, mt: 2 }}>
+      <Typography variant='h4' component='h2' gutterBottom>
+        {blog.title}
+      </Typography>
+
+      <Typography variant='subtitle1' color='text.secondary' gutterBottom>
+        by {blog.author}
+      </Typography>
+
+      <Typography sx={{ mb: 2 }}>
+        <MuiLink href={blog.url} target='_blank' rel='noreferrer'>
+          {blog.url}
+        </MuiLink>
+      </Typography>
+
+      <Stack direction='row' alignItems='center' spacing={2} sx={{ mb: 2 }}>
+        <Typography>Likes: {blog.likes}</Typography>
+
+        <Button variant='contained' onClick={() => onLike(blog.id)}>
+          Like
+        </Button>
+      </Stack>
+
+      <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+        Added by: {blog.user?.name ?? 'Unknown user'}
+      </Typography>
+
+      {isOwner && (
+        <Button variant='outlined' color='error' onClick={handleDelete}>
+          Remove
+        </Button>
+      )}
+    </Paper>
   );
 };
 

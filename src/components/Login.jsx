@@ -2,8 +2,9 @@ import { useState } from 'react';
 import loginService from '../services/login';
 import blogService from '../services/blogs';
 import { Error } from './Notification';
+import { Box, Button, TextField, Typography } from '@mui/material';
 
-const Login = (user, setUser) => {
+const Login = ({ setUser }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -30,34 +31,37 @@ const Login = (user, setUser) => {
   };
 
   return (
-    <div>
+    <Box sx={{ maxWidth: 400, mt: 4 }}>
       <Error error={error} />
 
-      <h2>Log in to application</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>
-            username
-            <input
-              type='text'
-              value={username}
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            password
-            <input
-              type='password'
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </label>
-        </div>
-        <button>login</button>
-      </form>
-    </div>
+      <Typography variant='h5' component='h2' sx={{ mb: 2 }}>
+        Log in to application
+      </Typography>
+
+      <Box
+        component='form'
+        onSubmit={handleLogin}
+        sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField
+          label='Username'
+          value={username}
+          onChange={({ target }) => setUsername(target.value)}
+          fullWidth
+        />
+
+        <TextField
+          label='Password'
+          type='password'
+          value={password}
+          onChange={({ target }) => setPassword(target.value)}
+          fullWidth
+        />
+
+        <Button type='submit' variant='contained'>
+          Login
+        </Button>
+      </Box>
+    </Box>
   );
 };
 
