@@ -4,16 +4,12 @@ const Statistics = () => {
   const { good, bad, neutral } = useStatistics();
 
   const all = good + bad + neutral;
-  const average = (good - bad) / all;
-  const positive = (good / all) * 100;
+  let average = (good - bad) / all;
+  let positive = (good / all) * 100;
 
   if (all === 0) {
-    return (
-      <div>
-        <h2>statistics</h2>
-        <p>No feedback given</p>
-      </div>
-    );
+    average = 0;
+    positive = 0;
   }
 
   return (
@@ -39,11 +35,11 @@ const Statistics = () => {
           </tr>
           <tr>
             <td>average</td>
-            <td>{average.toFixed(1)}</td>
+            <td>{average}</td>
           </tr>
           <tr>
             <td>positive</td>
-            <td>{positive.toFixed(1)} %</td>
+            <td>{positive} %</td>
           </tr>
         </tbody>
       </table>
