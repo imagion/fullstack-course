@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useShallow } from 'zustand/shallow';
 
 const anecdotesAtStart = [
   'If it hurts, do it more often',
@@ -19,6 +20,9 @@ export const asObject = (anecdote) => ({
 
 const useAnecdoteStore = create((set) => ({
   anecdotes: anecdotesAtStart.map(asObject),
+
+  filter: '',
+
   actions: {
     vote: (id) =>
       set((state) => ({
@@ -28,11 +32,27 @@ const useAnecdoteStore = create((set) => ({
             : anecdote,
         ),
       })),
+
     add: (anecdote) =>
       set((state) => ({ anecdotes: [...state.anecdotes, anecdote] })),
+    setFilter: (value) => set(() => ({ filter: value })),
   },
 }));
 
-export const useAnecdotes = () => useAnecdoteStore((state) => state.anecdotes);
+export const useVisibleAnecdotes = () => {
+  const { anecdotes, filter } = useAnecdoteStore(
+    useShallow((state) => ({
+      anecdotes: state.anecdotes,
+      filter: state.filter,
+    })),
+  );
+
+  return anecdotes.filter((anecdote) =>
+    anecdote.content.toLowerCase().includes(filter.toLowerCase()),
+  );
+};
+
+export const useFilter = () => useAnecdoteStore((state) => state.filter);
+
 export const useAnecdoteActions = () =>
   useAnecdoteStore((state) => state.actions);

@@ -1,7 +1,7 @@
-import { useAnecdoteActions, useAnecdotes } from '../store';
+import { useAnecdoteActions, useVisibleAnecdotes } from '../store';
 
 const AnecdoteList = () => {
-  const anecdotes = useAnecdotes();
+  const anecdotes = useVisibleAnecdotes();
   const { vote } = useAnecdoteActions();
 
   return (
